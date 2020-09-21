@@ -1,0 +1,310 @@
+---
+name: MedicationStatement
+field_name_base_url: http://hl7.org/fhir/DSTU2/medicationstatement-definitions.html#MedicationStatement
+fields:
+- name: resourceType
+  required: 'Yes'
+  type: string
+  description: The type of the FHIR resource.
+  example: |
+    {
+      "resourceType: "MedicationStatement"
+    }
+  note: resourceType must be MedicationStatement
+  url: http://hl7.org/fhir/DSTU2/json.html#resources
+
+- name: id
+  required: 'Yes'
+  type: id
+  description: The logical id of the resource to update.
+  example: |
+    {
+      "id": "123412"
+    }
+  url: http://hl7.org/fhir/DSTU2/resource-definitions.html#Resource.id
+  action: update
+
+- name: patient
+  required: 'Yes'
+  type: Reference (Patient)
+  description: Who is/was taking the medication.
+  example: |
+    {
+      "patient": {
+        "reference": "Patient/5366327"
+      }
+    }
+
+- name: status
+  required: 'Yes'
+  type: code
+  description: >
+    A code representing the patient or other source's judgment about the state of the medication used that this
+    statement is about.
+  example: |
+    {
+      "status": "active"
+    }
+
+- name: reasonForUse[x]
+  required: 'No'
+  type: CodeableConcept
+  action: search
+  url: http://hl7.org/fhir/DSTU2/medicationstatement-definitions.html#MedicationStatement.reasonForUse_x_
+  binding:
+    description: A reason for why the medication is being/was taken.
+    terminology:
+    - display: SNOMED CT
+      system: http://snomed.info/sct
+    - display: ICD-9
+      system: http://hl7.org/fhir/sid/icd-9
+    - display: ICD-10
+      system: http://hl7.org/fhir/sid/icd-10
+
+- name: effectivePeriod
+  required: 'No'
+  type: Period
+  description: The interval of time during which it is being asserted that the patient was taking the medication.
+  note: If effectivePeriod and dosage.timing.repeat.boundsPeriod are both populated they need to be the same value.
+  example: |
+    {
+      "effectivePeriod": {
+        "start": "2015-05-05T14:00:00.000Z",
+        "end": "2015-05-06T01:00:00.000Z"
+      }
+    }
+  url: http://hl7.org/fhir/DSTU2/medicationstatement-definitions.html#MedicationStatement.effective_x_
+  action: create
+
+- name: note
+  required: 'No'
+  type: string
+  description: Provides extra information about the medication statement that is not conveyed by the other attributes.
+  example: |
+    {
+      "note": "do not take with alcohol"
+    }
+  action: create
+
+- name: medication[x]
+  required: 'Yes'
+  type: CodeableConcept | contained Reference (Medication)
+  description: Identifies the medication being administered.
+  note:
+  - update: This must be the current medication. It cannot be modified.
+  example: |
+    {
+      "medicationReference": {
+        "reference": "#456235",
+        "display": "Ibuprofen"
+      }
+    }
+
+    {
+      "medicationCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+             "code": "2551",
+             "display": "Ciprofloxacin",
+             "userSelected": false
+          }
+        ],
+        "text": "ciprofloxacin"
+      }
+    }
+  url: http://hl7.org/fhir/DSTU2/medicationstatement-definitions.html#MedicationStatement.medication_x_
+  binding:
+    description: A code that defines the type of medication.
+    terminology:
+    - display: RxNorm
+      system: http://www.nlm.nih.gov/research/umls/rxnorm
+
+- name: dosage
+  required: 'No'
+  type: List of BackboneElement
+  description: How the medication is/was used by the patient.
+  note: At most one dosage can be populated.
+  action: create
+  children:
+
+  - name: text
+    required: 'No'
+    type: string
+    description: Free text dosage information as reported about a patient's medication use.
+    example: |
+      {
+        "text": "2, Oral, 2x/Wk, first dose 05/05/15 10:00:00 EDT"
+      }
+
+  - name: timing
+    required: 'No'
+    type: Timing
+    description: The timing schedule for giving the medication to the patient.
+    children:
+
+    - name: repeat
+      required: 'No'
+      type: Element
+      description: A set of rules that describe when the event should occur.
+      url: http://hl7.org/fhir/DSTU2/datatypes-definitions.html#Timing.repeat
+      children:
+
+      - name: bounds[x]
+        required: 'No'
+        type: Period | Duration
+        description: >
+          Either the length of timing schedule or the outer bounds for start and/or end limits of the timing schedule.
+        example: |
+          {
+            "boundsPeriod": {
+              "start": "2014-11-03T14:38:00.000-05:00"
+            }
+          }
+
+        example2: |
+          {
+            "boundsQuantity": {
+              "value": 10,
+              "unit": "days",
+              "system": "http://unitsofmeasure.org",
+              "code": "d"
+            }
+          }
+
+        url: http://hl7.org/fhir/DSTU2/datatypes-definitions.html#Timing.repeat.bounds_x_
+
+      - name: count
+        required: 'No'
+        type: integer
+        description: A total count of the desired number of repetitions.
+        example: |
+          {
+            "count": 5
+          }
+        url: http://hl7.org/fhir/DSTU2/datatypes-definitions.html#Timing.repeat.count
+
+    - name: code
+      required: 'No'
+      type: CodeableConcept
+      description: A code for the timing pattern.
+      example: |
+        {
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/v3/vs/GTSAbbreviation",
+                "code": "TID",
+                "display": "TID"
+              }
+            ],
+            "text": "TID"
+          }
+        }
+      url: http://hl7.org/fhir/DSTU2/datatypes-definitions.html#Timing.code
+      binding:
+        description: Code for a known / defined timing pattern.
+        terminology:
+        - display: TimingAbbreviation
+          system: http://hl7.org/fhir/timing-abbreviation
+        - display: SNOMED CT
+          system: http://snomed.info/sct
+
+  - name: asNeeded[x]
+    required: 'No'
+    type: boolean | CodeableConcept
+    description: Whether the Medication is only taken when needed within a specific dosing schedule.
+    example: |
+      {
+        "asNeededCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "25064002",
+              "display": "for headache"
+            }
+          ]
+        }
+      }
+
+    example2: |
+      {
+        "asNeededBoolean" : true
+      }
+    binding:
+      description: >
+        A coded concept identifying the precondition that should be met or evaluated prior to consuming or
+        administering a medication dose.
+      terminology:
+      - display: SNOMED CT
+        system: http://snomed.info/sct
+    url: http://hl7.org/fhir/DSTU2/medicationstatement-definitions.html#MedicationStatement.dosage.asNeeded_x_
+
+  - name: siteCodeableConcept
+    required: 'No'
+    type: CodeableConcept
+    description: Where on the body the medication is/was administered.
+    example: |
+      {
+        "siteCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "368208006",
+              "display": "left upper arm structure (body structure)"
+            }
+          ],
+          "text": "Left Arm"
+        }
+      }
+    binding:
+      description: Where on the body the medication is/was administered.
+      terminology:
+      - display: SNOMED CT
+        system: http://snomed.info/sct
+    url: http://hl7.org/fhir/DSTU2/medicationstatement-definitions.html#MedicationStatement.dosage.site_x_
+
+  - name: route
+    required: 'No'
+    type: CodeableConcept
+    description: >
+      A code specifying the route or physiological path of administration of a therapeutic agent into or onto a subject.
+    example: |
+      {
+        "route": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "41974700",
+              "display": "Chew (qualifier value)"
+            }
+          ],
+          "text": "Chewed"
+        }
+      }
+    binding:
+      description: >
+        A coded concept describing the route or physiological path of administration of a therapeutic agent into or onto
+        the body of a subject.
+      terminology:
+      - display: SNOMED CT
+        system: http://snomed.info/sct
+        info_link: http://hl7.org/fhir/dstu2/snomedct.html
+      - display: NCI Metathesaurus
+        system: http://ncimeta.nci.nih.gov
+        info_link: http://hl7.org/fhir/dstu2/ncimeta.html
+
+  - name: quantityQuantity
+    required: 'No'
+    type: SimpleQuantity
+    description: The amount of therapeutic or other substance given at one administration event.
+    example: |
+      {
+        "quantityQuantity": {
+          "value": 2,
+          "unit": "tabs",
+          "system": "http://unitsofmeasure.org",
+          "code": "tbl"
+        }
+      }
+    url: http://hl7.org/fhir/DSTU2/medicationstatement-definitions.html#MedicationStatement.dosage.quantity_x_

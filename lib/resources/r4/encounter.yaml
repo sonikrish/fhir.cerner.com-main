@@ -1,0 +1,587 @@
+---
+name: Encounter
+field_name_base_url: https://hl7.org/fhir/r4/encounter-definitions.html#Encounter
+fields:
+- name: resourceType
+  required: 'Yes'
+  type: string
+  description: The type of the FHIR resource.
+  action: create
+  example: |
+    {
+      "resourceType": "Encounter"
+    }
+  note: resourceType must be Encounter
+  url: https://hl7.org/fhir/r4/json.html#resources
+
+- name: identifier
+  required: 'No'
+  type: List of Identifier
+  description: Identifier(s) by which this encounter is known.
+  example: |
+    {
+      "identifier": [
+        {
+          "use": "usual",
+          "type": {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/319",
+                "code": "1077",
+                "display": "FIN NBR"
+              }
+            ]
+          },
+          "system": "urn:oid:3.3.3.3.3.3",
+          "value": "2009",
+          "period": {
+            "start": "2017-01-17T20:39:40.000Z"
+          }
+        }
+      ]
+    }
+  children:
+
+  - name: type
+    required: 'Yes'
+    type: CodeableConcept
+    description: The type for the identifier that can be used to determine which identifier to use for a specific purpose.
+    url: https://hl7.org/fhir/r4/datatypes-definitions.html#Identifier.type
+    example: |
+      {
+        "type": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/319",
+              "code": "1077",
+              "display": "FIN NBR"
+            }
+          ]
+        }
+      }
+    example2: |
+      {
+        "type": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/319",
+              "code": "1077"
+            }
+          ]
+        }
+      }
+    note: Required if identifier is given.
+    binding:
+      description: The type used to determine which identifier to use for a specific purpose.
+      terminology:
+      - display: Identifier Type Codes
+        system: http://hl7.org/fhir/identifier-type
+        info_link: http://hl7.org/fhir/r4/valueset-identifier-type.html
+      - display: v2 Identifier Type
+        system: http://terminology.hl7.org/CodeSystem/v2-0203
+        info_link: http://hl7.org/fhir/r4/valueset-identifier-type.html
+      - display: Millennium Encounter AliasType
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/319
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-319-encounter-alias-type
+
+  - name: system
+    required: 'Yes'
+    type: uri
+    action: create
+    description: The namespace of the identifier.
+    url: https://hl7.org/fhir/r4/datatypes-definitions.html#Identifier.system
+    example: |
+      {
+        "system": "urn:oid:3.3.3.3.3.3"
+      }
+    note: Required if identifier is given.
+
+  - name: value
+    required: 'Yes'
+    type: string
+    action: create
+    description: The unique value of the identifier
+    url: https://hl7.org/fhir/r4/datatypes-definitions.html#Identifier.value
+    example: |
+      {
+        "value": "2009"
+      }
+    note: Required if identifier is given.
+
+- name: status
+  required: 'Yes'
+  type: code
+  description: The status of the encounter.
+  action: create
+  example: |
+    {
+      "status": "in-progress"
+    }
+  note: Currently do not support `cancelled` or <code>entered-in-error</code>.
+
+- name: class
+  required: 'No'
+  type: code
+  description: The classification of the encounter.
+  action: create
+  example: |
+    {
+      "class": "inpatient"
+    }
+  note: Direct writing of class is not supported. This field will be inferred on a write.
+
+- name: type
+  required: 'Yes'
+  type: List of CodeableConcept
+  description: The specific type of encounter.
+  example: |
+    {
+      "type": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0004",
+              "code": "O"
+            }
+          ]
+        }
+      ]
+    }
+  example2: |
+    {
+      "type": [
+        {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/71",
+              "code": "309310"
+            }
+          ]
+        }
+      ]
+    }
+  binding:
+    description: The type of encounter.
+    terminology:
+    - display: Millennium Encounter Visit Type
+      system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/71
+      info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-71-visit-type
+    - display: v2 Patient Class
+      system:  http://terminology.hl7.org/CodeSystem/v2-0004
+      info_link: http://hl7.org/fhir/R4/v2/0004/index.html
+    - display: SNOMED CT
+      system: http://snomed.info/sct
+      info_link: http://hl7.org/fhir/r4/snomedct.html
+    note: Encounters created with meta.security set with code 'UNCERTREL' will be returned with an external encounter type.
+
+- name: serviceType
+  action: read
+  binding:
+    description: Broad categorization of the service that is to be provided.
+    terminology:
+    - display: SNOMED CT
+      system: http://snomed.info/sct
+      info_link: http://hl7.org/fhir/r4/snomedct.html
+    - display: Millennium Encounter Hospital Service
+      system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/34
+      info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-34-hospital-service
+
+- name: priority
+  required: 'No'
+  type: CodeableConcept
+  description: Indicates the urgency of the encounter.
+  example: |
+    {
+      "priority": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActPriority",
+              "code": "O"
+            }
+          ]
+        }
+      ]
+    }
+  example2: |
+    {
+      "priority": [
+        {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/3",
+              "code": "309203"
+            }
+          ]
+        }
+      ]
+    }
+  binding:
+    description: Indicates the urgency of the encounter.
+    terminology:
+    - display: Encounter Priority
+      system: http://hl7.org/fhir/encounter-priority
+      info_link: http://hl7.org/fhir/v3/ActPriority/vs.html
+    - display: Millennium Encounter Admit Type
+      system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/3
+      info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-3-encounter-admission-type
+
+- name: subject
+  required: 'Yes'
+  type: Reference (Patient)
+  description: The patient present at the encounter.
+  action: create
+  example: |
+    {
+      "subject": {
+        "reference": "Patient/4342011"
+      }
+    }
+
+- name: participant
+  required: 'No'
+  type: List of BackboneElement
+  description: The list of people responsible for providing the service.
+  example: |
+    {
+      "participant": [
+        {
+          "type": [
+            {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/v3/ParticipationType",
+                  "code": "ATND"
+                }
+              ]
+            }
+          ],
+          "period": {
+            "start": "2017-03-02T20:01:13.000Z"
+          },
+          "individual": {
+            "reference": "Practitioner/1912007"
+          }
+        }
+      ]
+    }
+
+  children:
+
+  - name: type
+    required: 'Yes'
+    type: List of CodeableConcept
+    description: Role of participant in encounter.
+    example: |
+      {
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/v3/ParticipationType",
+                "code": "ATND"
+              }
+            ]
+          }
+        ]
+      }
+    example2: |
+      {
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+                "code": "1126"
+              }
+            ]
+          }
+        ]
+      }
+    note: Required if participant is given.
+
+    binding:
+      description: Role of participant in encounter.
+      terminology:
+      - display: ParticipantType
+        system: http://hl7.org/fhir/participant-type
+        info_link: http://hl7.org/fhir/r4/valueset-encounter-participant-type.html
+      - display: Millennium Encounter/Personnel Relationship
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/333
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-333-encounterpersonnel-relationship
+
+  - name: period
+    required: 'No'
+    type: Period
+    action: create
+    description: The start and end times for the period the participant was involved in the encounter.
+    example: |
+      {
+        "period": {
+          "start": "2017-03-02T01:13:00Z"
+        }
+      }
+
+  - name: individual
+    required: 'Yes'
+    type: Reference (Practitioner, RelatedPerson)
+    action: create
+    description: The personnel present at the encounter.
+    example: |
+      {
+        "reference": "Practitioner/1912007"
+      }
+    note: Required if participant is given.
+
+- name: period
+  required: 'No'
+  type: Period
+  description: The start and end times of the encounter.
+  action: create
+  example: |
+    {
+      "period": {
+        "start": "2017-03-02T01:13:00Z",
+        "end": "2017-03-05T00:00:00Z"
+      }
+    }
+  note: A date with time must be provided.
+
+- name: reasonCode
+  required: 'No'
+  type: List of CodeableConcept
+  description: The reason that the encounter is taking place.
+  action: create
+  example: |
+    {
+      "reasonCode": [
+        {
+          "text": "Neck pain"
+        }
+      ]
+    }
+  note: Only the text field is supported for reasonCode.
+
+- name: hospitalization
+  required: 'No'
+  type: BackboneElement
+  description: Details about the admission to a healthcare service.
+  example: |
+    {
+      "hospitalization": {
+        "admitSource": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/admit-source",
+              "code": "born"
+            }
+          ]
+        },
+        "dischargeDisposition": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
+              "code": "other-hcf"
+            }
+          ]
+        }
+      }
+    }
+  note: Only the admitSource and dischargeDisposition fields are supported on write.
+  children:
+
+  - name: admitSource
+    required: 'No'
+    type: CodeableConcept
+    description: From where patient was admitted.
+    example: |
+      {
+        "admitSource": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/admit-source",
+              "code": "born"
+            }
+          ]
+        }
+      }
+    example2: |
+      {
+        "admitSource": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/2",
+              "code": "670834"
+            }
+          ]
+        }
+      }
+    binding:
+      description: From where patient was admitted.
+      terminology:
+      - display: AdmitSource
+        system: http://hl7.org/fhir/admit-source
+        info_link: http://hl7.org/fhir/r4/valueset-encounter-admit-source.html
+      - display: Millennium Hospitalization Admission Source
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/2
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-2-admission-source
+
+  - name: dietPreference
+    required: 'No'
+    type: List of CodeableConcept
+    action: read
+    description: Diet preferences reported by the patient.
+    binding:
+      description: Medical, cultural or ethical food preferences to help with catering requirements.
+      terminology:
+      - display: Diet
+        system: http://terminology.hl7.org/CodeSystem/diet
+        info_link: http://hl7.org/fhir/r4/valueset-encounter-diet.html
+      - display: Millennium Patient Diet Preference
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/18
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-18-diet
+
+  - name: specialCourtesy
+    required: 'No'
+    type: List of CodeableConcept
+    action: read
+    description: The special courtesies applicable to the patient.
+    binding:
+      description: Special courtesies.
+      terminology:
+      - display: v3 Code System EncounterSpecialCourtesy
+        system: http://terminology.hl7.org/CodeSystem/v3-EncounterSpecialCourtesy
+        info_link: http://hl7.org/fhir/r4/valueset-encounter-special-courtesy.html
+      - display: Millennium Patient VIP Status
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/67
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-67-vip
+      - display: Millennium Patient Courtesy
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/16
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-16-courtesy
+
+  - name: specialArrangement
+    required: 'No'
+    type: List of CodeableConcept
+    action: read
+    description: The special arrangements made for the patient during the encounter.
+    binding:
+      description: Special arrangements.
+      terminology:
+      - display: SpecialArrangements
+        system: http://hl7.org/fhir/encounter-special-arrangements
+        info_link: http://hl7.org/fhir/r4/valueset-encounter-special-arrangements.html
+
+  - name: dischargeDisposition
+    required: 'No'
+    type: CodeableConcept
+    description: Category or kind of location after discharge.
+    example: |
+      {
+        "dischargeDisposition": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
+              "code": "other-hcf"
+            }
+          ]
+        }
+      }
+    example2: |
+      {
+        "dischargeDisposition": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/19",
+              "code": "638660"
+            }
+          ]
+        }
+      }
+    binding:
+      description: Discharge Disposition.
+      terminology:
+      - display: DischargeDisposition
+        system: http://hl7.org/fhir/discharge-disposition
+        info_link: http://hl7.org/fhir/r4/valueset-encounter-discharge-disposition.html
+      - display: Millennium Encounter Discharge Disposition
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/19
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-19-discharge-disposition
+
+- name: serviceProvider
+  required: 'Yes'
+  type: Reference (Organization)
+  description: The organization (facility) responsible for this encounter.
+  action: create
+  example: |
+    {
+      "serviceProvider": {
+        "reference": "Organization/619848"
+      }
+    }
+
+- name: meta.security
+  url: https://hl7.org/fhir/r4/resource-definitions.html#Meta.security
+  required: 'No'
+  type: List of Coding
+  description: Security labels applied to this resource.
+  action: create
+  example: |
+    {
+      "meta": [
+        {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "UNCERTREL"
+            }
+          ]
+        }
+      ]
+    }
+  note: Encounters created with meta.security set with code 'UNCERTREL' will be returned with an external encounter type.
+  binding:
+    description: Security labels applied to this resource.
+    terminology:
+      - display: Observation Values
+        system: http://terminology.hl7.org/CodeSystem/v3-ObservationValue
+        info_link: http://hl7.org/fhir/r4/v3/ObservationValue/cs.html
+    note: Encounters created with meta.security set with code 'UNCERTREL' will be returned with an external encounter type.
+
+- name: Estimated Financial Responsibility Amount Extension
+  url: https://fhir.cerner.com/millennium/r4/encounters/encounter/#extensions
+  terminology_name: extension[x].valueMoney.currency
+  type: Money
+  description: Currency codes from ISO 4217 (see https://www.iso.org/iso-4217-currency-codes.html).
+  action: terminology
+  binding:
+    description: Currency codes from [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html). This binding is used in <code>estimated-financial-responsibility-amount</code> extensions.
+    terminology:
+      - display: Currencies
+        system: urn:iso:std:iso:4217
+        info_link: http://hl7.org/fhir/r4/valueset-currencies.html
+
+- name: Estimated Financial Responsibility Not Collected Reason Extension
+  url: https://fhir.cerner.com/millennium/r4/encounters/encounter/#extensions
+  terminology_name: extension[x].valueCodeableConcept
+  type: CodeableConcept
+  description: The reason no estimated amount is collected for the encounter.
+  action: terminology
+  binding:
+    description: The reason no estimated amount is collected for the encounter. This binding is used in <code>estimated-financial-responsibility-not-collected-reason</code> extensions.
+    terminology:
+      - display: Estimated Financial Responsibility Not Collected Reason
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/4660008
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-4660008-estimated-financial-responsibility-not-collected-reason
+
+- name: Payment Collection status Extension
+  url: https://fhir.cerner.com/millennium/r4/encounters/encounter/#extensions
+  terminology_name: extension[x].valueCodeableConcept
+  type: CodeableConcept
+  description: The payment collection status
+  action: terminology
+  binding:
+    description: The payment collection status. This binding is used in <code>payment-collection-status</code> extensions.
+    terminology:
+      - display: Payment Collection Status
+        system: https://fhir.cerner.com/&lt;EHR source id&gt;/codeSet/4003489
+        info_link: https://fhir.cerner.com/millennium/r4/proprietary-codes-and-systems/#code-set-4003489-payment-collection-status

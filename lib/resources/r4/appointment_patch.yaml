@@ -1,0 +1,209 @@
+---
+name: Appointment
+field_name_base_url: http://hl7.org/fhir/R4/appointment-definitions.html#Appointment
+operations:
+  - name: replace-status
+    path: /status
+    operation: replace
+    type: code
+    url: http://hl7.org/fhir/R4/appointment-definitions.html#Appointment.status
+    description: The status of the appointment
+    example: |
+      {
+        "op": "replace",
+        "path": "/status",
+        "value": "cancelled"
+      }
+    note: >
+      <ul>
+        <li>Only "arrived", "checked-in", "cancelled", "booked", and "fulfilled" are supported</li>
+        <li>This patch operation must be accompanied by the add Slot patch operation when updating status to "booked"</li>
+      </ul>
+  - name: add-slot
+    path: /slot
+    operation: add
+    type: Reference (Slot)
+    url: https://hl7.org/fhir/R4/appointment-definitions.html#Appointment.slot
+    description: The slot that this appointment is filling
+    example: |
+      {
+        "op": "add",
+        "path": "/slot",
+        "value": [
+          {
+            "reference":"Slot/1986119705-4048128-15648907-60"
+          }
+        ]
+      }
+    note: >
+      <ul>
+        <li>When present, this patch operation must be accompanied by the replace Status patch operation with a value of "booked"</li>
+        <li>Only one Slot reference may be provided in the value array</li>
+      </ul>
+  - name: add-reasonCode
+    path: /reasonCode
+    operation: add
+    type: List of CodeableConcept
+    url: http://hl7.org/fhir/R4/appointment-definitions.html#Appointment.reasonCode
+    description: The clinical reason for why this appointment is being scheduled
+    example: |
+      {
+        "op": "add",
+        "path": "/reasonCode",
+        "value": [
+          {
+            "text": "I have a headache"
+          }
+        ]
+      }
+    note: >
+      <ul>
+        <li>When present, this patch operation must be accompanied by the replace Status patch operation with a value of "booked"</li>
+        <li>Only one CodeableConcept may be provided in the value array</li>
+        <li>CodeableConcept.text is required and CodeableConcept.coding, if present, will be ignored</li>
+        <li>When the value array is empty, reasonCode will be removed</li>
+      </ul>
+  - name: add-provider-vmr
+    path: /contained/0/telecom/0/value
+    operation: add
+    type: string
+    url: https://hl7.org/fhir/R4/datatypes-definitions.html#ContactPoint.value
+    description: The provider Video Visit link
+    example: |
+      {
+        "op": "add",
+        "path": "/contained/0/telecom/0/value",
+        "value": "http://providerlink.vmr.net"
+      }
+    note: >
+      <ul>
+        <li>This patch operation may be used only for Video Visit appointments</li>
+        <li>This patch operation must be accompanied by all other Video Visit link patch operations with an op of add</li>
+        <li>The URL length must be less than or equal to 255 characters</li>
+      </ul>
+  - name: add-patient-vmr
+    path: /contained/1/telecom/0/value
+    operation: add
+    type: string
+    url: https://hl7.org/fhir/R4/datatypes-definitions.html#ContactPoint.value
+    description: The patient Video Visit link
+    example: |
+      {
+        "op": "add",
+        "path": "/contained/1/telecom/0/value",
+        "value": "http://patientlink.vmr.net"
+      }
+    note: >
+      <ul>
+        <li>This patch operation may be used only for Video Visit appointments</li>
+        <li>This patch operation must be accompanied by all other Video Visit link patch operations with an op of add</li>
+        <li>The URL length must be less than or equal to 255 characters</li>
+      </ul>
+  - name: add-period-start
+    path: /contained/0/telecom/0/period/start
+    operation: add
+    type: datetime
+    url: http://hl7.org/fhir/R4/datatypes-definitions.html#Period.start
+    description: The start datetime for the Video Visit
+    example: |
+      {
+        "op": "add",
+        "path": "/contained/0/telecom/0/period/start",
+        "value": "2019-07-13T08:00:00.000Z"
+      }
+    note: >
+      <ul>
+        <li>This patch operation may be used only for Video Visit appointments</li>
+        <li>The value for this patch operation will be applied to both the provider Video Visit link and the patient Video Visit link</li>
+        <li>This patch operation must be accompanied by all other Video Visit link patch operations with an op of add</li>
+      </ul>
+  - name: add-period-end
+    path: /contained/0/telecom/0/period/end
+    operation: add
+    type: datetime
+    url: http://hl7.org/fhir/R4/datatypes-definitions.html#Period.end
+    description: The end datetime for the Video Visit
+    example: |
+      {
+        "op": "add",
+        "path": "/contained/0/telecom/0/period/end",
+        "value": "2019-07-13T08:30:00.000Z"
+      }
+    note: >
+      <ul>
+        <li>This patch operation may be used only for Video Visit appointments</li>
+        <li>The value for this patch operation will be applied to both the provider Video Visit link and the patient Video Visit link</li>
+        <li>This patch operation must be accompanied by all other Video Visit link patch operations with an op of add</li>
+      </ul>
+  - name: replace-provider-vmr
+    path: /contained/0/telecom/0/value
+    operation: replace
+    type: string
+    url: https://hl7.org/fhir/R4/datatypes-definitions.html#ContactPoint.value
+    description: The provider Video Visit link
+    example: |
+      {
+        "op": "replace",
+        "path": "/contained/0/telecom/0/value",
+        "value":  "http://providerlink.vmr.net"
+      }
+    note: >
+      <ul>
+        <li>This patch operation may be used only for Video Visit appointments</li>
+        <li>This patch operation must be accompanied by all other Video Visit link patch operations with an op of replace</li>
+        <li>The URL length must be less than or equal to 255 characters</li>
+      </ul>
+  - name: replace-patient-vmr
+    path: /contained/1/telecom/0/value
+    operation: replace
+    type: string
+    url: https://hl7.org/fhir/R4/datatypes-definitions.html#ContactPoint.value
+    description: The patient Video Visit link
+    example: |
+      {
+        "op": "replace",
+        "path": "/contained/1/telecom/0/value",
+        "value":  "http://patientlink.vmr.net"
+      }
+    note: >
+      <ul>
+        <li>This patch operation may be used only for Video Visit appointments</li>
+        <li>This patch operation must be accompanied by all other Video Visit link patch operations with an op of replace</li>
+        <li>The URL length must be less than or equal to 255 characters</li>
+      </ul>
+  - name: replace-period-start
+    path: /contained/0/telecom/0/period/start
+    operation: replace
+    type: datetime
+    url: http://hl7.org/fhir/R4/datatypes-definitions.html#Period.start
+    description: The start datetime for the Video Visit
+    example: |
+      {
+        "op": "replace",
+        "path": "/contained/0/telecom/0/period/start",
+        "value":  "2019-07-13T08:30:00.000Z"
+      }
+    note: >
+      <ul>
+        <li>This patch operation may be used only for Video Visit appointments</li>
+        <li>The value for this patch operation will be applied to both the provider Video Visit link and the patient Video Visit link</li>
+        <li>This patch operation must be accompanied by all other Video Visit link patch operations with an op of replace</li>
+      </ul>
+  - name: replace-period-end
+    path: /contained/0/telecom/0/period/end
+    operation: replace
+    type: datetime
+    url: http://hl7.org/fhir/R4/datatypes-definitions.html#Period.end
+    description: The end datetime for the Video Visit
+    example: |
+      {
+        "op": "replace",
+        "path": "/contained/0/telecom/0/period/end",
+        "value":  "2019-07-14T08:30:00.000Z"
+      }
+    note: >
+      <ul>
+        <li>This patch operation may be used only for Video Visit appointments</li>
+        <li>The value for this patch operation will be applied to both the provider Video Visit link and the patient Video Visit link</li>
+        <li>This patch operation must be accompanied by all other Video Visit link patch operations with an op of replace</li>
+      </ul>

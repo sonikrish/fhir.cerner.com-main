@@ -1,0 +1,27 @@
+<div id="header">
+
+  <div id="top-header">
+    <div class="header-wrapper">
+
+      <a class="logo" href="https://code.cerner.com">Cerner Corporation</a>
+      <% if @item[:header_button] %>
+        <a class="button" id="header-button" href="https://code.cerner.com/developer/smart-on-fhir/">code Console</a>
+      <% end %>
+
+    </div><!-- /.header-wrapper -->
+  </div><!-- /#top-header -->
+
+  <div id="bottom-header">
+    <div class="header-wrapper">
+
+      <ul class="pages">
+        <li><a href="/millennium/overview/" class="nav-dstu2-api">Millennium</a></li>
+        <li><a href="/soarian/dstu2/" class="nav-dstu2-api">Soarian</a></li>
+        <li><a href="/authorization" class="nav-dstu2-api">Authorization</a></li>
+        <li><a href="/smart" class="nav-dstu2-api">SMART</a></li>
+      </ul>
+
+    </div><!-- /.header-wrapper -->
+  </div><!-- /#bottom-header -->
+
+</div><!-- /#header -->
